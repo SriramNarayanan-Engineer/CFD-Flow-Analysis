@@ -4,7 +4,7 @@
 
 # Numerical and array operations
 import numpy as np  
-# - Provides arrays (like lists but faster and more efficient)
+# - Provides arrays
 # - Provides mathematical operations: sqrt, sin, cos, linear algebra, etc.
 
 # Data handling and manipulation
@@ -162,7 +162,7 @@ def load_data(file_path):
 
 
 # ---------------------------------------------------------------
-#               FUNCTION: is_3D_data
+#                   FUNCTION: is_3D_data
 # ---------------------------------------------------------------
 # Purpose:
 # - Determines if the dataset represents 3D flow
@@ -183,15 +183,14 @@ def compute_2D_vorticity(df, grid_n=100):
     """
     Function: compute_2D_vorticity
     -------------------------------
-    Calculates **vorticity** in a 2D flow field.
+    Calculates vorticity in a 2D flow field.
     
     This function:
     1. Takes raw velocity data (u and v) at scattered points.
-    2. Places it on a nice, regular square grid.
+    2. Places it on a regular square grid.
     3. Calculates vorticity = (rate of change of v in x direction) - (rate of change of u in y direction).
-    4. Solves for something called a **streamfunction** (think of it as
-       smooth curves that represent the path fluid elements follow).
-    5. Returns everything so we can make pretty plots.
+    4. Solves for streamfunction.
+    5. Returns everything so we can make plots.
 
     Parameters:
         df : Pandas DataFrame
@@ -267,7 +266,7 @@ def compute_2D_vorticity(df, grid_n=100):
     Lx = diags([ex * (-2.0), ex[:-1], ex[:-1]], [0, -1, 1], shape=(nx, nx)) / dx**2
     Ly = diags([ey * (-2.0), ey[:-1], ey[:-1]], [0, -1, 1], shape=(ny, ny)) / dy**2
 
-    # Identity matrices (like "do nothing" operators)
+    # Identity matrices
     Ix = identity(nx)
     Iy = identity(ny)
     
@@ -368,8 +367,9 @@ def compute_3D_vorticity(df, k=10):
 
     # Return values (mainly x,z for slice visualization)
     return x, z, vorticity[:, 0], vorticity[:, 2], vort_mag
+    
 # ===============================================================
-# VORTICITY PLOTTING FUNCTIONS
+#                  VORTICITY PLOTTING FUNCTIONS
 # ===============================================================
 
 def plot_2D_vorticity(X, Y, vorticity, U, V, streamfunction, save_path=None):
@@ -418,11 +418,11 @@ def plot_3D_vorticity(x, z, vort_x, vort_z, vort_mag, save_path=None):
     """
     Function: plot_3D_vorticity
     ----------------------------
-    Creates a **2D slice view** (picking two directions (here: x and z) and showing how vorticity looks in that plane) of 3D vorticity.
+    Creates a 2D slice view (picking two directions (here: x and z) and showing how vorticity looks in that plane) of 3D vorticity.
 
     What we do here:
     - Represent vorticity using small arrows that show its direction (x,z components).
-    - Color the arrows by **magnitude** (overall strength of rotation).
+    - Color the arrows by magnitude.
 
     Inputs:
         x, z : coordinates of data points
@@ -438,7 +438,7 @@ def plot_3D_vorticity(x, z, vort_x, vort_z, vort_mag, save_path=None):
     #   x,z = positions of arrows
     #   vort_x, vort_z = direction of each arrow
     #   vort_mag = color (strength of spin)
-    #   scale=50 makes arrows not too long
+    #   scale = 50 makes arrows not too long
 
     # Labels and title
     plt.xlabel("x-position")
@@ -646,7 +646,7 @@ def compute_2D_spectral_analysis(df):
     # It tells us which "repeating patterns" are present and their strength
     fft_vals = np.fft.fft(u)                 # transform the velocity
     freqs = np.fft.fftfreq(len(u), d=dx)     # corresponding frequencies
-    power = np.abs(fft_vals)**2               # power = magnitude squared of FFT
+    power = np.abs(fft_vals)**2              # power = magnitude squared of FFT
 
     # Plot FFT results
     plt.figure()
@@ -658,15 +658,15 @@ def compute_2D_spectral_analysis(df):
     plt.show()
 
     # ========================
-    # Wavelet Transform
+    #    Wavelet Transform
     # ========================
     # Wavelets allow us to see how the frequency of patterns changes along x
     import pycwt as wavelet
     mother = wavelet.Morlet(6)  # Choose a Morlet wavelet (a wave-like function)
     dt = dx                     # spacing between x points
     s0 = 2 * dt                 # smallest scale (shortest wavelength we care about)
-    dj = 0.25                    # resolution in scales
-    J = 7 / dj                   # number of scales
+    dj = 0.25                   # resolution in scales
+    J = 7 / dj                  # number of scales
 
     # Compute the continuous wavelet transform (CWT)
     # wave → complex numbers representing pattern strength at each x and scale
@@ -719,8 +719,8 @@ def compute_3D_spectral_analysis(df):
 
     # Average u along y-z planes to simplify data into 1D
     bins = np.linspace(x.min(), x.max(), 100)  # 100 bins along x
-    u_mean = np.zeros_like(bins)              # store averaged u
-    counts = np.zeros_like(bins)              # count number of points per bin
+    u_mean = np.zeros_like(bins)               # store averaged u
+    counts = np.zeros_like(bins)               # count number of points per bin
 
     for i in range(len(u)):
         idx = np.argmin(np.abs(bins - x[i]))  # find closest bin for this point
@@ -805,7 +805,7 @@ def compute_2D_shear_layer(df):
     ---------------------------------
     Purpose:
     - Measure how much the flow speed changes across the 2D plane.
-    - This is called the "shear layer" and highlights areas where velocity changes rapidly.
+    - Helps highlight areas where velocity changes rapidly.
     - In 2D, we focus on the x-direction and compute the average speed change along y.
 
     Steps:
@@ -884,10 +884,10 @@ def compute_3D_shear_layer(df, k=6):
     """
 
     # Step 1: Extract positions and compute velocity magnitudes
-    coords = df[['x','y','z']].values                       # positions
+    coords = df[['x','y','z']].values                      # positions
     mag = np.sqrt(df['u']**2 + df['v']**2 + df['w']**2)    # speed at each point
     n = len(df)
-    k = min(k, n)                                           # cannot have more neighbors than points
+    k = min(k, n)                                          # cannot have more neighbors than points
 
     # Step 2: Build nearest neighbors model
     # This finds the indices of k closest points for each point
@@ -1059,6 +1059,7 @@ def plot_velocity_field(df):
     except Exception as e:
         # Catch any unexpected error and show in messagebox
         messagebox.showinfo("Velocity Field", f"Error: {e}")
+        
 # ===============================================================
 #                       MAIN FUNCTION
 # ===============================================================
