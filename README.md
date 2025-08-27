@@ -36,8 +36,8 @@ It works with data saved from simulations (CFD) or experiments in '.vtk' or '.cs
 2. Download this project  
    - Option 1: Clone using Git  
      ```bash
-     git clone https://github.com/your-username/cfd-flow-analysis.git
-     cd cfd-flow-analysis
+     git clone https://github.com/SriramNarayanan-Engineer/CFD-Flow-Analysis.git
+     cd CFD-Flow-Analysis
      ```  
    - Option 2: Download ZIP from GitHub → extract it → open in your terminal  
 
